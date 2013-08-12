@@ -1,40 +1,49 @@
 <?php
 
-class url {
+class url extends helper {
 
-    public static function uri() {
+    public function __construct() {
+        parent::__construct();
+    }
 
-        if (!isset($_SERVER['REQUEST_URI']) OR !isset($_SERVER['SCRIPT_NAME'])) {
-            return '';
+    public static function base($uri = '', $ssl = false) {
+        $url = parent::$param['base_url'];
+        if (!empty($uri))
+            $url .= $uri;
+
+        if ($ssl)
+            $url = preg_replace("/^http:\/\//", 'https://', $url);
+
+        return $url;
+    }
+
+    public static function attachment($uri = '', $ssl = false) {
+        $url = parent::$param['application']['attachment']['url'] . '/';
+        if (!empty($uri))
+            $url .= $uri;
+
+        if ($ssl)
+            $url = preg_replace("/^http:\/\//", 'https://', $url);
+
+        return $url;
+    }
+
+    public static function anchor($title, $uri = '', $ssl = false, $attribut = array()) {
+
+        $attr = '';
+        foreach ($attribut as $key => $value) {
+            $attr .= $key .= '="' . $value . '" ';
         }
 
-        $uri = $_SERVER['REQUEST_URI'];
-        if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0) {
-            $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
-        } elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0) {
-            $uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
-        }
-        if (strncmp($uri, '?/', 2) === 0) {
-            $uri = substr($uri, 2);
-        }
-        $parts = preg_split('#\?#i', $uri, 2);
-        $uri = $parts[0];
-        if (isset($parts[1])) {
-            $_SERVER['QUERY_STRING'] = $parts[1];
-            parse_str($_SERVER['QUERY_STRING'], $_GET);
-        } else {
-            $_SERVER['QUERY_STRING'] = '';
-            $_GET = array();
-        }
+        $anchor = '<a href="' . self::base($uri, $ssl) . '" ' . $attr . '>' . $title . '</a>';
+        return $anchor;
+    }
 
-        if ($uri == '/' || empty($uri)) {
-            return '/';
-        }
-
-        $uri = parse_url($uri, PHP_URL_PATH);
-
-        return str_replace(array('//', '../'), '/', trim($uri, '/'));
+    public static function redirect($uri, $ssl = false) {
+        $url = self::base($uri, $ssl);
+        header('Location: ' . $url);
     }
 
 }
+
 ?>

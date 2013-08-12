@@ -30,10 +30,14 @@ class view {
             $$var = $value;
         }
 
-        $layout = file_get_contents($theme);
-        $view = file_get_contents($view);
+        if ($this->param['config']['main']['view']['curl']) {
+            // Get content with curl disini
+        } else {
+            $layout = file_get_contents($theme);
+            $view = file_get_contents($view);
+        }
 
-        $str = str_replace($this->param['config']['main']['view']['main_view'], $view, $layout);
+        $str = str_replace($this->param['config']['main']['view']['target'], $view, $layout);
         if ($this->param['config']['main']['view']['wrapping']) {
             $out = $this->wrapping($str);
         } else {

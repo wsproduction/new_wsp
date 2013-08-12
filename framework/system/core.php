@@ -72,14 +72,13 @@ class core {
         }
 
         // Load other system
-        $system_list = array('controller', 'object', 'view', 'model', 'load');
+        $system_list = array('controller', 'object', 'view', 'model');
         $system_path = base_path . '/' . framework_base . '/system';
         $this->loader($system_path, $system_list);
-        
-        // Load libraries
-        $autoload_config['libraries'][] = 'database';
-        $library_path = base_path . '/' . framework_base . '/libraries';
-        $this->loader($library_path, $autoload_config['libraries']);
+
+        // Set default autoload
+        $autoload_config['helpers'][] = 'session';
+        $autoload_config['helpers'][] = 'asset';
 
         $source_path = base_path . '/' . $app_param['folder'] . '/source';
         $page = $source_path . '/controllers/' . $controller . '.php';
@@ -88,30 +87,42 @@ class core {
             if (class_exists($controller)) {
 
                 // Mendeklarasikan parameter
-                $dot_slash = $this->dot_slash($this->uri(false), $controller);
+                $dot_slash = $this->dot_slash($this->uri(false), $controller, $is_child);
 
                 $app_param['attachment']['url'] = $dot_slash . $app_param['folder'] . '/asset/attachment';
                 $app_param['logs']['path'] = base_path . '/' . $app_param['folder'] . '/asset/logs';
                 $app_param['js']['url'] = $dot_slash . $app_param['folder'] . '/asset/js';
                 $app_param['themes']['url'] = $dot_slash . $app_param['folder'] . '/asset/themes/' . $app_param['themes']['name'];
                 $app_param['themes']['path'] = base_path . '/' . $app_param['folder'] . '/asset/themes/' . $app_param['themes']['name'];
+                $app_param['source']['path'] = $source_path;
 
                 $param = array(
                     'framework' => array(
-                        'url' => $dot_slash . framework_base
+                        'url' => $dot_slash . framework_base,
+                        'path' => base_path . '/' . framework_base
                     ),
                     'application' => $app_param,
                     'config' => array(
                         'main' => $main_config,
-                        'database' => $db_config
+                        'database' => $db_config,
+                        'autoload' => $autoload_config
                     ),
                     'source_path' => $source_path,
-                    'model_name' => $controller . '_model',
+                    'model_name' => $controller,
                     'host' => $_SERVER['SERVER_NAME'],
                     'base_path' => base_path,
                     'base_url' => $this->base_url()
                 );
 
+                // Load libraries
+                $main_libraries = array('database', 'helper', 'load');
+                $library_path = base_path . '/' . framework_base . '/libraries';
+                $this->loader($library_path, $main_libraries);
+
+                // set helpers parameters
+                helper::$param = $param;
+                
+                // Class declaration
                 $class_controller = new $controller($param);
 
                 /*
@@ -179,11 +190,15 @@ class core {
         return $url;
     }
 
-    private function dot_slash($uri, $controller) {
+    private function dot_slash($uri, $controller, $is_child) {
 
         if ($uri != '/') {
             $get_slahs = preg_replace("/^\/{$controller}/", '', $uri);
             $count_slash = substr_count($get_slahs, '/');
+            
+            if ($is_child)
+                $count_slash -= 1;
+            
             if ($count_slash > 0) {
                 $dot_slash = '';
                 for ($i = 0; $i < $count_slash; $i++) {
@@ -198,14 +213,26 @@ class core {
         }
     }
 
-    private function loader($path, $list) {
+    private function loader($path, $list, $prefix = '', $alternative_path = '') {
         $temp = array();
         foreach ($list as $value) {
+
+            if (!empty($prefix)) {
+                $value .= $prefix;
+            }
+
             $file = $path . '/' . $value . '.php';
             if (!in_array($value, $temp)) {
                 $temp[] = $value;
                 if (file_exists($file)) {
                     require_once($file);
+                } else {
+                    if (!empty($alternative_path)) {
+                        $file = $alternative_path . '/' . $value . '.php';
+                        if (file_exists($file)) {
+                            require_once($file);
+                        }
+                    }
                 }
             }
         }
