@@ -8,12 +8,13 @@ class home extends controller {
 
     public function index() {
         
+        $db2 = $this->model->other_db();
         $db = $this->model->select_all();
-        
         
         $this->view->test_variable = 'ini variable dari controller';
         $this->view->test_variable_array = array(1,2,3);
-        $this->view->test_model = $db->result();
+        $this->view->test_model = $db->objects();
+        $this->view->test_model2 = $db2->arrays();
         $this->view->render('home');
     }
 

@@ -8,6 +8,13 @@ return array(
             'username' => 'root',
             'password' => '',
             'database' => 'dbmom'
+        ),
+        'onlinescore' => array(
+            'dbdriver' => 'mysql',
+            'hostname' => 'localhost',
+            'username' => 'root',
+            'password' => '',
+            'database' => 'dbac_onlinescore'
         )
     )
 );

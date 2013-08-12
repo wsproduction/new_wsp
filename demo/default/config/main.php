@@ -5,7 +5,7 @@ return array(
     'language' => 'ind',
     'view' => array(
         'wrapping' => true,
-        'main_view' => '{main_view}'
+        'target' => '{main_view}'
     )
 );
 ?>
