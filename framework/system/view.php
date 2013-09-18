@@ -8,12 +8,12 @@ class view {
         $this->param = $param;
     }
 
-    public function render($views = '') {
+    public function render($views = '', $include_to_themes = true) {
         $theme = $this->param['application']['themes']['path'] . '/layout.php';
         $view = $this->param['source_path'] . '/views/' . $views . '.php';
         if (file_exists($theme)) {
             if (file_exists($view)) {
-                $this->generate($theme, $view);
+                $this->generate($theme, $view, $include_to_themes);
             } else {
                 echo 'View tidak ditemukan';
             }
@@ -22,7 +22,7 @@ class view {
         }
     }
 
-    private function generate($theme, $view) {
+    private function generate($theme, $view, $include_to_themes) {
 
         // Mengambil semua variable yang sudah di daftarkan di Class Object
         $load_vars = object::load_vars();
@@ -37,7 +37,12 @@ class view {
             $view = file_get_contents($view);
         }
 
-        $str = str_replace($this->param['config']['main']['view']['target'], $view, $layout);
+        if ($include_to_themes == true) {
+            $str = str_replace($this->param['config']['main']['view']['target'], $view, $layout);
+        } else {
+            $str = $view;
+        }
+
         if ($this->param['config']['main']['view']['wrapping']) {
             $out = $this->wrapping($str);
         } else {

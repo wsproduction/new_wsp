@@ -326,6 +326,10 @@ ul.m-left li a{
     font-weight: bold;
 }
 
+ul.m-left li a:hover {
+    text-decoration: underline;
+}
+
 ul.m-left li a.user{
     background: url('../images/user.png') no-repeat;
     background-position: 10px center;
@@ -346,17 +350,23 @@ ul.m-left ul {
 }
 
 ul.m-left ul li{
+    clear: both;
     list-style: none;
     border-left: 1px dashed #ccc;
     margin: 0 0 0 25px;
+    background: url('../images/dashed-grey.png') no-repeat;
+    background-position: left top 22px;
+    min-height: 40px;
 }
 
 ul.m-left ul li a {
     padding: 15px 15px 15px 12px;
-    background: url('../images/dashed-grey.png') no-repeat;
-    background-position: left center;
     font-weight: normal;
 }
+
+ul.m-left ul li a:hover {
+    text-decoration: underline;
+} 
 
 
 /* 

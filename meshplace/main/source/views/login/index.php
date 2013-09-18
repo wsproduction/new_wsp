@@ -56,7 +56,7 @@
                 <div class="box-fitur">
                     <div class="fl-left">
                         <?php
-                        echo asset::image()->load($row->icon);
+                        echo asset::image()->load('app/' . $row->icon);
                         ?>
                     </div>
                     <div class="fitur-content fl-left">

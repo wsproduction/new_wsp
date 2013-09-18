@@ -106,7 +106,15 @@ $protection = session::get('sess_login');
                                     
                                     <ul id="list-m-apps" style="display: block;">
                                         <?php foreach ($app->objects() as $row) : ?>
-                                        <li><?php echo url::anchor($row->name, $row->alias); ?></li>
+                                        <li>
+                                            <?php 
+                                                $app_title = '<span style="float: left;">' . asset::image()->load('app/' . $row->icon, '', array('style'=>'width:16px;height:16px;')) . '</span>';
+                                                $app_title .= '<span style="float: left;margin-left:5px;width:150px;">' . $row->name . '</span>';
+                                                
+                                                echo url::anchor($app_title, 'app/load/' . $row->alias); 
+                                            ?>
+                                            <div class="cl">&nbsp;</div>
+                                        </li>
                                         <?php endforeach; ?>
                                     </ul>
                                     
