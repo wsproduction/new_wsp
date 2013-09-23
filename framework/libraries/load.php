@@ -77,9 +77,4 @@ class load {
         }
     }
 
-    public function tes_instance($name) {
-        $controller = controller::get_instance();
-        $controller->{$name} = 'Ini dia instance';
-    }
-
 }

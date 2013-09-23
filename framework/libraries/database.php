@@ -404,13 +404,16 @@ class database {
 
     private function sql_generate($sql, $return = 'bool') {
         try {
+            
             $sth = $this->pdo->prepare($sql);
             $sth->setFetchMode(PDO::FETCH_ASSOC);
 
             foreach ($this->query['bind_value'] as $key => $value) {
                 $sth->bindValue($key, $value, PDO::PARAM_NULL);
             }
-
+            
+            $this->reset_query();
+            
             if ($return == 'data') {
                 $sth->execute();
                 return new fetch_db($sth->fetchAll());
@@ -421,7 +424,6 @@ class database {
             echo $e->getMessage();
             return false;
         }
-        $this->reset_query();
     }
 
 }

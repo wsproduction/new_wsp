@@ -7,7 +7,7 @@ return array(
         'main' => array(
             'name' => 'Meshplace',
             'folder' => 'main',
-            'themes' => 'orangestrip'
+            'themes' => 'flat'
         ),
         'child' => array(
             array(

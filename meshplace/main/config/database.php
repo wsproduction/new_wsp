@@ -7,7 +7,7 @@ return array(
             'hostname' => 'localhost',
             'username' => 'root',
             'password' => '',
-            'database' => 'dbac_meshplace'
+            'database' => 'meshplace_main'
         ),
         'onlinescore' => array(
             'dbdriver' => 'mysql',

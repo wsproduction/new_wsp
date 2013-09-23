@@ -115,7 +115,7 @@ class core {
                 );
 
                 // Load libraries
-                $main_libraries = array('database', 'helper', 'load');
+                $main_libraries = array('database', 'load', 'helper');
                 $library_path = base_path . '/' . framework_base . '/libraries';
                 $this->loader($library_path, $main_libraries);
 

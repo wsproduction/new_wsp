@@ -9,10 +9,6 @@ class login extends controller {
     }
 
     public function index() {
-        asset::js()->plugin('jquery.validation');
-        asset::js()->plugin('jquery.form');
-        asset::js()->plugin('jquery.base');
-
         $this->load->helper('form');
 
         $this->view->app = $this->app_model->app_list(1);
