@@ -13,39 +13,43 @@ class login extends controller {
 
         $this->view->app = $this->app_model->app_list(1);
         $this->view->action_login = url::base('login/run');
-        $this->view->render('login/index');
+        $this->view->render('login/main');
     }
 
     public function run() {
 
-        $username = $this->input->post('username', 'title[Username]|requaired');
-        $password = $this->input->post('password', 'title[Password]|requaired');
-
-        if ($this->input->validation()) {
-            $data = array(
-                array('username', '=', $username),
-                array('password', '=', md5($password))
-            );
-            $user = $this->model->user($data);
-            $user_data = $user->row();
-            if ($user_data) {
-                $session = array(
-                    'sess_login' => true,
-                    'sess_userdata' => array(
-                        'user_id' => $user_data->user_id,
-                        'name' => $user_data->name,
-                    )
-                );
-                session::set($session);
-                $message = array(true, true, url::base('home'));
-            } else {
-                $message = array(false, true, base64_encode('pesan error'));
-            }
-        } else {
-            $message = array(false, true, base64_encode($this->input->validation_message()));
-        }
-
-        echo json_encode($message);
+//        $username = $this->input->post('username', 'title[Username]|requaired');
+//        $password = $this->input->post('password', 'title[Password]|requaired');
+//
+//        if ($this->input->validation()) {
+//            $data = array(
+//                array('username', '=', $username),
+//                array('password', '=', md5($password))
+//            );
+//            $user = $this->model->user($data);
+//            $user_data = $user->row();
+//            if ($user_data) {
+//                $session = array(
+//                    'sess_login' => true,
+//                    'sess_userdata' => array(
+//                        'user_id' => $user_data->user_id,
+//                        'name' => $user_data->name,
+//                    )
+//                );
+//                session::set($session);
+//                $message = array(true, true, url::base('home'));
+//            } else {
+//                $message = array(false, true, base64_encode('pesan error'));
+//            }
+//        } else {
+//            $message = array(false, true, base64_encode($this->input->validation_message()));
+//        }
+//
+//        echo json_encode($message);
+        
+        //echo '<textarea>';
+        echo json_encode(array('message' => 'Hellow World'));
+        //echo '</textarea>';
     }
 
     public function stop() {

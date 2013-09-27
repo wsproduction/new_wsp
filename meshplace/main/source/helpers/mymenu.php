@@ -19,82 +19,87 @@ class mymenu extends helper {
         parent::__construct();
     }
 
+    private static $menu = array();
+    private static $order = array();
+
     public static function modul($data) {
         // Parsing Menu
-        $modul = '';
-        $menu = array();
-        $order = array();
         foreach ($data->objects() as $row) {
-            $status = '';
-            if ($row->modul_url == $modul)
-                $status = 'active';
-
             if (empty($row->modul_parent)) {
-                $order['parent'][$row->modul_order] = $row->modul_id;
-                $menu['parent'][$row->modul_id] = array(
+                self::$order['parent'][$row->modul_order] = $row->modul_id;
+                self::$menu['parent'][$row->modul_id] = array(
                     'title' => $row->modul_name,
                     'url' => $row->modul_url,
                     'description' => $row->modul_description,
-                    'status' => $status,
                     'icon' => $row->modul_icon
                 );
             } else {
-                $order['children'][$row->modul_parent][$row->modul_order] = $row->modul_id;
+                self::$order['children'][$row->modul_parent][$row->modul_order] = $row->modul_id;
 
-                if ($status == 'active')
-                    $menu['parent'][$row->modul_parent]['status'] = $status;
-
-                $menu['children'][$row->modul_parent][$row->modul_id] = array(
+                self::$menu['children'][$row->modul_parent][$row->modul_id] = array(
                     'title' => $row->modul_name,
                     'url' => $row->modul_url,
                     'description' => $row->modul_description,
-                    'status' => $status,
                     'icon' => $row->modul_icon
                 );
             }
         }
 
         // Render Menu
-        ksort($order['parent']);
+        ksort(self::$order['parent']);
         $m = '';
-        foreach ($order['parent'] as $key => $val) {
-            $data = $menu["parent"][$val];
-            $url = '';//($data['url'] != '#') ? base_url($data['url']) : '#';
-
-            // Validate Menu
-            $class = '';
-            $m2 = '';
-            if (isset($order['children'][$val])) {
-                $class .= 'dropdown';
-
-                if ($data['status'] == 'active')
-                    $m2 .= '<ul  class="dropdown-menu">';
-                else
-                    $m2 .= '<ul class="dropdown-menu">';
-
-                // Render Anak Menu
-                ksort($order['children'][$val]);
-                foreach ($order['children'][$val] as $key2 => $val2) {
-                    if (isset($menu["children"][$val][$val2])) {
-                        $data2 = $menu["children"][$val][$val2];
-                        $url2 = '';//($data2['url'] != '#') ? base_url($data2['url']) : '#';
-
-                        $m2 .= '<li><a href="' . $url2 . '"> ' . $data2['title'] . '</a></li>';
-                    }
-                }
-
-                $m2 .= '</ul>';
-            }
-
-            $class .= ' ' . $data['status'];
+        foreach (self::$order['parent'] as $val) {
+            $data = self::$menu["parent"][$val];
+            $url = $data['url'];
+            $title = $data['title'];
 
             // View Menu
             $m .= '<li>';
-            $m .= '<a data-toggle="dropdown" class="dropdown-toggle" href="' . $url . '">' . $data['title'] . '<span class="caret"></span></a>';
-            $m .= $m2;
+            if (isset(self::$order['children'][$val])) {
+                $m .= '     <a data-toggle="dropdown" class="dropdown-toggle" href="' . $url . '">' . $title . '<span class="caret"></span></a>';
+                $m .= self::child_modul($val);
+            } else {
+                $m .= '     <a href="' . $url . '">' . $title . '</a>';
+            }
             $m .= '</li>';
         }
         $m .= '';
+        return $m;
+    }
+
+    private static function child_modul($val) {
+        $m = '';
+        $m .= '<ul class="dropdown-menu">';
+
+        // Render Anak Menu
+        ksort(self::$order['children'][$val]);
+        foreach (self::$order['children'][$val] as $val2) {
+            if (isset(self::$menu["children"][$val][$val2])) {
+                $data = self::$menu["children"][$val][$val2];
+                $url = $data['url'];
+                $title = $data['title'];
+
+                if (isset(self::$order['children'][$val2])) {
+                    $m .= '<li class="dropdown-submenu">';
+
+                    $taget = '';
+                    if ($url == '#') {
+                        $taget = 'data-toggle="dropdown" class="dropdown-toggle"';
+                    }
+
+                    $m .= ' <a ' . $taget . ' href="' . $url . '"> ' . $title . '</a>';
+                    $m .= self::child_modul($val2);
+                    $m .= '</li>';
+                } else {
+                    $m .= '<li>';
+                    $m .= ' <a href="' . $url . '"> ' . $title . '</a>';
+                    $m .= '</li>';
+                }
+            }
+        }
+
+        $m .= '</ul>';
+
         return $m;
     }
 

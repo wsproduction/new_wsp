@@ -44,6 +44,7 @@ class form extends helper {
         self::reset_attribut();
         self::$attribut['type'] = $type;
         self::$attribut['name'] = self::$attribut['id'] = $name;
+        self::push_attribut($attribut);
     }
 
     public static function value($value) {
@@ -88,7 +89,7 @@ class form extends helper {
             self::$form_tips_id[] = self::$attribut['name'];
         }
     }
-    
+
     public static function password_meter($status = 'false') {
         self::$password_meter = $status;
     }
@@ -102,11 +103,7 @@ class form extends helper {
         return new __input_type(self::$frmName);
     }
 
-    public static function show() {
-        echo self::generate();
-    }
-
-    public static function callback() {
+    public static function render() {
         return self::generate();
     }
 
@@ -117,10 +114,20 @@ class form extends helper {
 
     private static function parsing_attribut($array) {
         $attr = '';
-        foreach ($array as $key => $val) {
-            $attr .= $key . '="' . $val . '" ';
+        if (is_array($array)) {
+            foreach ($array as $key => $val) {
+                $attr .= $key . '="' . $val . '" ';
+            }
         }
         return $attr;
+    }
+
+    private static function push_attribut($array) {
+        if (is_array($array)) {
+            foreach ($array as $key => $val) {
+                self::$attribut[$key] = $val;
+            }
+        }
     }
 
     private static function parsing_validation_properties($type = array(), $msg = array(), $remote = array()) {

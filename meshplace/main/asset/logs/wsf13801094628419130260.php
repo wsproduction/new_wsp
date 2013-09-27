@@ -80,13 +80,8 @@ $protection = session::get('sess_login');
         asset::js()->append('plugins/chosen/chosen.jquery.min');
         // select2
         asset::js()->append('plugins/select2/select2.min');
-        // Validation
-        asset::js()->append('plugins/validation/jquery.validate.min');
-        asset::js()->append('plugins/validation/additional-methods.min');
         // icheck
         asset::js()->append('plugins/icheck/jquery.icheck.min');
-        // jquery upload
-        asset::js()->append('plugins/jquery-upload/jquery.form');
 
         // Theme framework
         asset::js()->append('eakroko.min');
@@ -94,10 +89,6 @@ $protection = session::get('sess_login');
         asset::js()->append('application.min');
         // Just for demonstration
         asset::js()->append('demonstration.min');
-        // validation messages
-        asset::js()->append('validation.messages');
-        // common
-        asset::js()->append('common');
 
         echo asset::jcss();
         ?>
@@ -110,7 +101,7 @@ $protection = session::get('sess_login');
             </script>
         <![endif]-->
     </head>
-    <?php if ($protection) : /* Jika Sudah Login if (true) :*/ ?>
+    <?php if (true) : //if ($protection) : /* Jika Sudah Login */ ?>
         <body class="theme-lightred">
             <div id="new-task" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-header">
@@ -984,7 +975,31 @@ $protection = session::get('sess_login');
     <?php else : /* Jika Belum Login */ ?>
         <body class='login theme-lightred'>
             <div class="wrapper">
-                {main_view}
+                <h1><a href="index-2.html"><?php //echo asset::image()->load('icon.png', '', array('class' => 'retina-ready', 'width' => '59', 'height' => '49')); ?>Meshplace</a></h1>
+<div class="login-body">
+    <h2>SIGN IN</h2>
+    <form action="<?php echo $action_login; ?>" method='get' class='form-validate' id="test">
+        <div class="control-group">
+            <div class="email controls">
+                <input type="text" name='uemail' placeholder="Username" class='input-block-level' data-rule-required="true" data-rule-email="true">
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="pw controls">
+                <input type="password" name="upw" placeholder="Password" class='input-block-level' data-rule-required="true">
+            </div>
+        </div>
+        <div class="submit">
+            <div class="remember">
+                <input type="checkbox" name="remember" class='icheck-me' data-skin="square" data-color="blue" id="remember"> <label for="remember">Remember me</label>
+            </div>
+            <input type="submit" value="Sign me in" class='btn btn-primary'>
+        </div>
+    </form>
+    <div class="forget">
+        <a href="#"><span>Forgot password?</span></a>
+    </div>
+</div>
             </div>
             <script type="text/javascript">
 
