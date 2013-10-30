@@ -16,13 +16,13 @@ class input {
     private $value;
     private $validation;
     private $message;
-    private $validation_list = array('requaired' => 'is Requaired');
+    private $validation_list = array('requaired' => 'The :title is requaired', 'callback' => '');
 
     public function __construct($param) {
         $this->param = $param;
     }
 
-    public function post($variable_name = '', $validation = '') {
+    public function post($variable_name = '', $title = '', $validation = array()) {
         $res = null;
         if (isset($_POST[$variable_name])) {
             $temp_value = $_POST[$variable_name];
@@ -36,30 +36,46 @@ class input {
             }
         }
 
+        // Set Title
+        if (empty($title))
+            $title = $variable_name;
+        $this->message[$variable_name]['title'] = $title;
+
+        // Append Validation
         $this->value[$variable_name] = $res;
-        if (!empty($validation)) {
+        if (is_array($validation) && count($validation) > 0) {
             $this->validation[$variable_name] = $validation;
         }
 
         return $res;
     }
 
-    public function get($variable_name = '', $default_value = NULL) {
+    public function get($variable_name = '', $title = '', $validation = array()) {
+        $res = null;
         if (isset($_GET[$variable_name])) {
-            $temp_val = $_GET[$variable_name];
-            if (!is_array($temp_val)) {
-                $val = trim($temp_val);
-                $res = $default_value;
+            $temp_value = $_GET[$variable_name];
+            if (!is_array($temp_value)) {
+                $val = trim($temp_value);
                 if ($val != '') {
                     $res = $val;
                 }
             } else {
                 $res = $val;
             }
-            return $res;
-        } else {
-            return $default_value;
         }
+
+        // Set Title
+        if (empty($title))
+            $title = $variable_name;
+        $this->message[$variable_name]['title'] = $title;
+
+        // Append Validation
+        $this->value[$variable_name] = $res;
+        if (is_array($validation) && count($validation) > 0) {
+            $this->validation[$variable_name] = $validation;
+        }
+
+        return $res;
     }
 
     public function files($variable_name = '', $content = '') {
@@ -73,28 +89,29 @@ class input {
         }
         return $bool;
     }
-
+    
+    public function set_message($validation, $message) {
+        $this->validation_list[$validation] = $message;
+    }
+    
     public function validation() {
 
         $error = 0;
         if (count($this->validation)) {
-            foreach ($this->validation as $key => $a) {
-
-                $rules = explode('|', $a);
-                foreach ($rules as $b) {
-                    if (preg_match('/^title/', $b)) {
-                        $c = explode('[', $b);
-                        $this->message[$key]['title'] = $this->get_parameter($c[1]);
-                    } else {
-                        if (isset($this->validation_list[$b])) {
-                            if (!$this->$b($this->value[$key])) {
-                                $error++;
-                                $status = false;
-                            } else {
-                                $status = true;
-                            }
-                            $this->set_status($key, $b, $status);
+            foreach ($this->validation as $variable_name => $rules) {
+                foreach ($rules as $funct => $param) {
+                    if (isset($this->validation_list[$funct])) {
+                        if ($this->$funct($this->value[$variable_name], $param)) {
+                            $status = true;
+                        } else {
+                            $error++;
+                            $status = false;
                         }
+                        
+                        if ($funct == 'callback')
+                            $funct = $param;
+                        
+                        $this->set_status($variable_name, $funct, $status);
                     }
                 }
             }
@@ -106,13 +123,8 @@ class input {
             return false;
     }
 
-    private function set_status($key, $validation, $status) {
-        $this->message[$key]['status'][$validation] = $status;
-    }
-
-    private function get_parameter($string) {
-        $param = str_replace("]", '', $string);
-        return $param;
+    private function set_status($form, $validation, $status) {
+        $this->message[$form]['status'][$validation] = $status;
     }
 
     public function validation_message() {
@@ -129,7 +141,8 @@ class input {
                 foreach ($this->validation_list as $val => $default_message) {
                     if (isset($msg['status'][$val])) {
                         if (!$msg['status'][$val]) {
-                            $show_message .= '<div>' . $title . ' ' . $default_message . '</div>';
+                            $message = str_replace(':title', $title, $default_message);
+                            $show_message .= '<div>' . $message . '</div>';
                             break;
                         }
                     }
@@ -141,20 +154,32 @@ class input {
 
     /* Daftar Fungsi Validasi input */
 
-    private function requaired($value) {
+    private function requaired($value, $callback) {
         $a = trim($value);
-        if (!empty($a))
-            return true;
-        else
-            return false;
+        if ($callback) {
+            if (empty($a))
+                return false;
+            else
+                return true;
+        } else {
+            if (empty($a))
+                return true;
+            else
+                return false;
+        }
+    }
+    
+    private function callback($value, $callback) {
+        $class = controller::get_instance();
+        return $class->$callback($value);
     }
 
     private function equal($value) {
         $a = trim($value);
         if ($a == 'sama')
-            return true;
+            return 1;
         else
-            return false;
+            return 0;
     }
 
 }

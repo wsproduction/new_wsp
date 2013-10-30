@@ -9,47 +9,42 @@ class login extends controller {
     }
 
     public function index() {
-        $this->load->helper('form');
+        asset::js()->plugin('jquery.form');
+        asset::js()->plugin('jquery.valiation');
+        asset::js()->plugin('icheck');
 
-        $this->view->app = $this->app_model->app_list(1);
+        $this->load->helper('form');
         $this->view->action_login = url::base('login/run');
         $this->view->render('login/main');
     }
 
     public function run() {
 
-//        $username = $this->input->post('username', 'title[Username]|requaired');
-//        $password = $this->input->post('password', 'title[Password]|requaired');
-//
-//        if ($this->input->validation()) {
-//            $data = array(
-//                array('username', '=', $username),
-//                array('password', '=', md5($password))
-//            );
-//            $user = $this->model->user($data);
-//            $user_data = $user->row();
-//            if ($user_data) {
-//                $session = array(
-//                    'sess_login' => true,
-//                    'sess_userdata' => array(
-//                        'user_id' => $user_data->user_id,
-//                        'name' => $user_data->name,
-//                    )
-//                );
-//                session::set($session);
-//                $message = array(true, true, url::base('home'));
-//            } else {
-//                $message = array(false, true, base64_encode('pesan error'));
-//            }
-//        } else {
-//            $message = array(false, true, base64_encode($this->input->validation_message()));
-//        }
-//
-//        echo json_encode($message);
-        
-        //echo '<textarea>';
-        echo json_encode(array('message' => 'Hellow World'));
-        //echo '</textarea>';
+        $username = $this->input->post('uemail', 'Username', array('requaired' => true));
+        $password = $this->input->post('upw', 'Password', array('requaired' => true));
+
+        if ($this->input->validation()) {
+            $this->load->model('user');
+            $user = $this->user_model->user_login($username, $password);
+            $user_data = $user->row();
+            if ($user_data) {
+                $session = array(
+                    'sess_login' => true,
+                    'sess_userdata' => array(
+                        'user_id' => $user_data->user_id,
+                        'email' => $user_data->email,
+                    )
+                );
+                session::set($session);
+                $message = array(true, true, url::base('home'));
+            } else {
+                $message = array(false, true, 'pesan error');
+            }
+        } else {
+            $message = array(false, true, $this->input->validation_message());
+        }
+
+        myprotection::xhr_result($message);
     }
 
     public function stop() {

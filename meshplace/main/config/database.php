@@ -8,13 +8,6 @@ return array(
             'username' => 'root',
             'password' => '',
             'database' => 'meshplace_main'
-        ),
-        'onlinescore' => array(
-            'dbdriver' => 'mysql',
-            'hostname' => 'localhost',
-            'username' => 'root',
-            'password' => '',
-            'database' => 'dbac_onlinescore'
         )
     )
 );

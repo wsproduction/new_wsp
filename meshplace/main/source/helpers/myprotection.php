@@ -30,6 +30,13 @@ class myprotection extends helper {
             }
         }
     }
+    
+    public static function xhr_result($value) {
+        header("Content-Type: application/javascript");
+        $result = json_encode($value);
+        $script = "while(1){function xhr_result(w,s,p){return {$result}}; break;}";
+        echo $script;
+    }
 
 }
 

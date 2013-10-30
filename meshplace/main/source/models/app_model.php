@@ -9,10 +9,12 @@ class app_model extends model {
     private $db_app = 'm_application';
     private $db_modul = 'm_modul';
 
-    public function app_list($where) {
+    public function app_list($where = array(), $limit = -1, $ofset = -1) {
         $this->db->from($this->db_app);
         if (is_array($where) && count($where) > 0)
             $this->db->where($where);
+        if ($limit >= 0 && $ofset >= 0)
+            $this->db->limit($limit, $ofset);
         $this->db->order('app_order');
         return $this->db->fetch();
     }

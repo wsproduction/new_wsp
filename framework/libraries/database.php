@@ -5,6 +5,7 @@ class database {
     private $param;
     private $query;
     private $pdo;
+    private $_status_transaction = 0;
 
     public function __construct($param) {
         $this->param = $param;
@@ -91,29 +92,34 @@ class database {
      * Method untuk menambahkan kondisi query
      */
 
-    public function where($attribut = '', $expression = '', $keyword = null, $condition = 'AND') {
+    public function where($attribut = '', $expression = '', $keyword = null, $bind_value = true, $condition = 'AND') {
         if (is_array($attribut)) {
             foreach ($attribut as $value) {
                 $attribut = '';
                 if (isset($value[0]))
                     $attribut = $value[0];
-                
+
                 $expression = '';
                 if (isset($value[1]))
                     $expression = $value[1];
-                
+
                 $keyword = null;
                 if (isset($value[2]))
                     $keyword = $value[2];
-                
-                $condition = 'AND';
+
+                $bind_value = true;
                 if (isset($value[3]))
-                    $condition = $value[3];
+                    $bind_value = $value[3];
+
+                $condition = 'AND';
+                if (isset($value[4]))
+                    $condition = $value[4];
 
                 $this->query['where'][] = array(
                     'attribut' => $attribut,
                     'expression' => $expression,
                     'keyword' => $keyword,
+                    'bind_value' => $bind_value,
                     'condition' => $condition
                 );
             }
@@ -122,6 +128,7 @@ class database {
                 'attribut' => $attribut,
                 'expression' => $expression,
                 'keyword' => $keyword,
+                'bind_value' => $bind_value,
                 'condition' => $condition
             );
         }
@@ -213,18 +220,31 @@ class database {
      * Method untuk menghapus data
      */
 
-    public function delete() {
-        $result = $this->sql_delete();
-        return $result;
+    public function delete($table, $condition = array()) {
+        $this->from($table);
+        $this->where($condition);
+        return $this->sql_delete();
     }
 
     /*
      * Method untuk mengupdate data
      */
 
-    public function update() {
-        $result = $this->sql_update();
-        return $result;
+    public function update($table, $data = array(), $condition = array()) {
+        $this->from($table);
+        $this->set($data);
+        $this->where($condition);
+        return $this->sql_update();
+    }
+
+    /*
+     * Method untuk menginsert data
+     */
+
+    public function insert($table, $data = array()) {
+        $this->from($table);
+        $this->set($data);
+        return $this->sql_insert();
     }
 
     /*
@@ -249,8 +269,19 @@ class database {
     private function sql_update() {
         $sql = '';
         $sql .= 'UPDATE ' . $this->query['from'] . ' ';
-        $sql .= $this->sql_set() . ' ';
+        $sql .= $this->sql_set_update() . ' ';
         $sql .= $this->sql_where();
+        return $this->sql_generate($sql);
+    }
+
+    /*
+     * Method untuk menggabungkan query menjadi sebuah sql insert untuk dieksekusi
+     */
+
+    private function sql_insert() {
+        $sql = '';
+        $sql .= 'INSERT INTO ' . $this->query['from'] . ' ';
+        $sql .= $this->sql_set_insert();
         return $this->sql_generate($sql);
     }
 
@@ -280,6 +311,7 @@ class database {
             foreach ($where_array as $value) {
                 $expression = $value['expression'];
                 $keyword = $value['keyword'];
+                $bind_value = $value['bind_value'];
 
                 if ($idx > 0) {
                     $where .= $value['condition'] . ' ';
@@ -294,8 +326,8 @@ class database {
                     $keyword_count = count($keyword);
                     $keyword_idx = 0;
                     foreach ($keyword as $kwd) {
-                        $binder = ':param_where_' . $idx . '_' . $keyword_idx;
-                        $this->query['bind_value'][$binder] = $kwd;
+                        $binder = ':wsf_param_where_' . date('YmdHis') . '_' . $idx . '_' . $keyword_idx;
+                        $this->bind_value($binder, $kwd);
                         $binder_list .= $binder;
                         $keyword_idx++;
                         if ($keyword_count != $keyword_idx) {
@@ -309,14 +341,19 @@ class database {
                         list($keyword_start, $keyword_end) = explode('=>', $keyword);
                     }
 
-                    $binder_start = ':param_where_' . $idx . '_start';
-                    $binder_end = ':param_where_' . $idx . '_end';
-                    $this->query['bind_value'][$binder_start] = trim($keyword_start);
-                    $this->query['bind_value'][$binder_end] = trim($keyword_end);
+                    $binder_start = ':wsf_param_where_' . date('YmdHis') . '_' . $idx . '_start';
+                    $binder_end = ':wsf_param_where_' . date('YmdHis') . '_' . $idx . '_end';
+                    $this->bind_value($binder_start, trim($keyword_start));
+                    $this->bind_value($binder_end, trim($keyword_end));
                     $parameter = $binder_start . ' AND ' . $binder_end . ' ';
                 } else {
-                    $parameter = ':param_where_' . $idx;
-                    $this->query['bind_value'][$parameter] = $keyword;
+
+                    if ($bind_value) {
+                        $parameter = ':wsf_param_where_' . date('YmdHis') . '_' . $idx;
+                        $this->bind_value($parameter, trim($keyword));
+                    } else {
+                        $parameter = $keyword;
+                    }
 
                     if ($keyword == null && $expression == '=') {
                         $expression = 'IS';
@@ -337,13 +374,13 @@ class database {
      * Method untuk menggabungkan sql data update
      */
 
-    private function sql_set() {
+    private function sql_set_update() {
         $sql = 'SET ';
         $count_set = count($this->query['set']);
         $idx = 0;
         foreach ($this->query['set'] as $key => $value) {
-            $parameter = ':param_set_' . $idx;
-            $this->query['bind_value'][$parameter] = $value;
+            $parameter = ':wsf_param_set_update_' . date('YmdHis') . '_' . $idx;
+            $this->bind_value($parameter, $value);
             $sql .= $key . ' = ' . $parameter;
             $idx++;
             if ($idx != $count_set) {
@@ -352,6 +389,41 @@ class database {
                 $sql .= ' ';
             }
         }
+        return $sql;
+    }
+
+    /*
+     * Method untuk menggabungkan sql data insert
+     */
+
+    private function sql_set_insert() {
+        $sql_field = '(';
+        $sql_values = '(';
+        $count_set = count($this->query['set']);
+        $idx = 0;
+        foreach ($this->query['set'] as $key => $value) {
+            if (preg_match('/^SQL\[/', $value)) {
+                $parameter = $this->replace_sql($value);
+            } else {
+                $parameter = ':wsf_param_set_insert_' . date('YmdHis') . '_' . $idx;
+                $this->bind_value($parameter, $value);
+            }
+
+            $sql_field .= $key;
+            $sql_values .= $parameter;
+
+            $idx++;
+            if ($idx != $count_set) {
+                $sql_field .= ', ';
+                $sql_values .= ', ';
+            } else {
+                $sql_field .= ') ';
+                $sql_values .= ') ';
+            }
+        }
+
+        $sql = $sql_field . ' VALUES ' . $sql_values;
+
         return $sql;
     }
 
@@ -399,21 +471,47 @@ class database {
     }
 
     /*
+     * Method untuk menginisalisasi value
+     */
+
+    public function bind_value($parameter, $value = null) {
+        if (is_array($parameter)) {
+            foreach ($parameter as $key => $value) {
+                $this->query['bind_value'][$key] = $value;
+            }
+        } else {
+            $this->query['bind_value'][$parameter] = $value;
+        }
+    }
+
+    /*
      * Method untuk mengeksekusi sql
      */
 
     private function sql_generate($sql, $return = 'bool') {
         try {
-            
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
             $sth = $this->pdo->prepare($sql);
             $sth->setFetchMode(PDO::FETCH_ASSOC);
 
             foreach ($this->query['bind_value'] as $key => $value) {
-                $sth->bindValue($key, $value, PDO::PARAM_NULL);
+                if (is_int($value))
+                    $param = PDO::PARAM_INT;
+                else if (is_bool($value))
+                    $param = PDO::PARAM_BOOL;
+                else if (is_null($value))
+                    $param = PDO::PARAM_NULL;
+                else if (is_string($value))
+                    $param = PDO::PARAM_STR;
+                else
+                    $param = FALSE;
+
+                $sth->bindValue($key, $value, $param);
             }
-            
+
             $this->reset_query();
-            
+
             if ($return == 'data') {
                 $sth->execute();
                 return new fetch_db($sth->fetchAll());
@@ -421,9 +519,65 @@ class database {
                 return $sth->execute();
             }
         } catch (PDOException $e) {
+            $this->_status_transaction += 1;
             echo $e->getMessage();
             return false;
         }
+    }
+
+    /*
+     * Last Insert ID
+     */
+
+    public function last_insert_id() {
+        $this->pdo->lastInsertId();
+    }
+
+    /*
+     * Begin Transaction
+     */
+
+    public function begin_transaction() {
+        $this->pdo->beginTransaction();
+    }
+
+    /*
+     * Commit Transaction
+     */
+
+    public function commit_transaction() {
+        $this->pdo->commit();
+    }
+
+    /*
+     * Rollback Transaction
+     */
+
+    public function rollback_transaction() {
+        $this->pdo->rollback();
+    }
+
+    /*
+     * Status Transaction
+     */
+
+    public function status_transaction() {
+        if ($this->_status_transaction == 0)
+            return true;
+        else
+            return false;
+    }
+
+    /*
+     * Replace SQL
+     */
+
+    private function replace_sql($value) {
+        $value = str_replace('SQL[', '(', $value);
+        $value = str_replace(']', ')', $value);
+        $value = str_replace(array("\n", "\r\n", "\r"), ' ', $value);
+        $value = preg_replace("/[\t\s]+/", " ", trim($value));;
+        return $value;
     }
 
 }

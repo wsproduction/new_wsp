@@ -1,30 +1,28 @@
-<h1><a href="index-2.html"><?php //echo asset::image()->load('icon.png', '', array('class' => 'retina-ready', 'width' => '59', 'height' => '49'));       ?>Meshplace</a></h1>
+<h1>Meshplace</h1>
 <div class="login-body">
     <h2>SIGN IN</h2>
 
-    <?php echo form::begin('form_login', $action_login, 'post', array('class' => 'ajax-upload form-validate', 'data-action-handler' => 'fhandler')); ?>
+    <?php echo form::begin('form_login', $action_login, 'post', array('class' => 'ajax-awesome form-validate', 'data-action-handler' => 'fhandler')); ?>
     <div class="control-group">
         <div class="email controls">
             <?php
-            form::create('text', 'uemail', array(
+            echo form::create('text', 'uemail', array(
                 'placeholder' => 'Username',
                 'class' => 'input-block-level',
                 'data-rule-required' => true,
                 'data-rule-email' => true
-            ));
-            echo form::render();
+                    ), true);
             ?>
         </div>
     </div>
     <div class="control-group">
         <div class="pw controls">
             <?php
-            form::create('password', 'upw', array(
+            echo form::create('password', 'upw', array(
                 'placeholder' => 'Password',
                 'class' => 'input-block-level',
                 'data-rule-required' => true
-            ));
-            echo form::render();
+                    ), true);
             ?>
         </div>
     </div>
@@ -43,6 +41,10 @@
 
 <script type="text/javascript">
     function fhandler(msg) {
-        alert(msg);
+        if (msg[0]) {
+            redirect(msg[2]);
+        } else {
+            alert(msg[2]);
+        }
     }
 </script>

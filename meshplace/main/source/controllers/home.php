@@ -9,6 +9,7 @@ class home extends controller {
     }
 
     public function index() {        
+        $this->view->title_page = 'Beranda';
         $this->view->app = $this->app_model->otor_apps();
         $this->view->modul = $this->app_model->otor_moduls();
         $this->view->render('home/main');

@@ -35,7 +35,12 @@ class url extends helper {
             $attr .= $key .= '="' . $value . '" ';
         }
 
-        $anchor = '<a href="' . self::base($uri, $ssl) . '" ' . $attr . '>' . $title . '</a>';
+        if (is_bool($uri) && $uri == false)
+            $uri = 'javascript:void(0)';
+        else
+            $uri = self::base($uri, $ssl);
+
+        $anchor = '<a href="' . $uri . '" ' . $attr . '>' . $title . '</a>';
         return $anchor;
     }
 

@@ -40,11 +40,14 @@ class form extends helper {
         self::$attribut = array();
     }
 
-    public static function create($type, $name, $attribut = array()) {
+    public static function create($type, $name, $attribut = array(), $render = false) {
         self::reset_attribut();
         self::$attribut['type'] = $type;
-        self::$attribut['name'] = self::$attribut['id'] = $name;
+        self::$attribut['name'] = $name;
         self::push_attribut($attribut);
+        
+        if ($render)
+            return self::generate ();
     }
 
     public static function value($value) {
@@ -107,8 +110,12 @@ class form extends helper {
         return self::generate();
     }
 
-    public static function label($title = null, $for = null) {
-        $label = '<label for="' . $for . '">' . $title . '</label>';
+    public static function label($title = '', $for = '', $attr = array()) {
+        $atrib = $attr;
+        if (is_array($attr)) {
+            $atrib = self::parsing_attribut($attr);
+        }
+        $label = '<label for="' . $for . '" ' . $atrib . '>' . $title . '</label>';
         return $label;
     }
 

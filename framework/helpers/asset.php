@@ -48,31 +48,151 @@ class __js_helper {
         $plugin_list = array(
             'jquery' => array(
                 'js' => array(
-                    'jquery-1.8.2.min'
+                    'jquery.min'
+                )
+            ),
+            'nicescroll' => array(
+                'js' => array(
+                    'plugins/nicescroll/jquery.nicescroll.min'
+                )
+            ),
+            'images.loaded' => array(
+                'js' => array(
+                    'plugins/imagesLoaded/jquery.imagesloaded.min'
                 )
             ),
             'jquery.ui' => array(
                 'js' => array(
-                    'jquery-ui-1.9.1.custom.min'
+                    'plugins/jquery-ui/jquery.ui.core.min',
+                    'plugins/jquery-ui/jquery.ui.widget.min',
+                    'plugins/jquery-ui/jquery.ui.mouse.min',
+                    'plugins/jquery-ui/jquery.ui.draggable.min',
+                    'plugins/jquery-ui/jquery.ui.resizable.min',
+                    'plugins/jquery-ui/jquery.ui.sortable.min',
+                    'plugins/touch-punch/jquery.touch-punch.min'
                 ),
                 'css' => array(
-                    'jquery.ui/flick/jquery-ui-1.9.1.custom.min'
-                )
-            ),
-            'jquery.validation' => array(
-                'js' => array(
-                    'jquery.validate',
-                    'jquery.validate.custom',
+                    'plugins/jquery-ui/smoothness/jquery-ui',
+                    'plugins/jquery-ui/smoothness/jquery.ui.theme'
                 )
             ),
             'jquery.form' => array(
                 'js' => array(
-                    'jquery.form',
+                    'plugins/form/jquery.form'
                 )
             ),
-            'jquery.base' => array(
+            'bootstrap' => array(
                 'js' => array(
-                    'jquery.base64.min',
+                    'bootstrap.min'
+                ),
+                'css' => array(
+                    'bootstrap.min',
+                    'bootstrap-responsive.min'
+                )
+            ),
+            'jquery.valiation' => array(
+                'js' => array(
+                    'plugins/validation/jquery.validate.min',
+                    'plugins/validation/additional-methods.min'
+                )
+            ),
+            'data.tables' => array(
+                'js' => array(
+                    'plugins/datatable/jquery.dataTables.min',
+                    'plugins/datatable/TableTools.min',
+                    'plugins/datatable/ColReorder.min',
+                    'plugins/datatable/ColVis.min',
+                    'plugins/datatable/FixedColumns.min',
+                    'plugins/datatable/dataTables.scroller.min'
+                )
+            ),
+            'slimscroll' => array(
+                'js' => array(
+                    'plugins/slimscroll/jquery.slimscroll.min'
+                )
+            ),
+            'vmap' => array(
+                'js' => array(
+                    'plugins/vmap/jquery.vmap.min',
+                    'plugins/vmap/jquery.vmap.world',
+                    'plugins/vmap/jquery.vmap.sampledata'
+                )
+            ),
+            'bootbox' => array(
+                'js' => array(
+                    'plugins/bootbox/jquery.bootbox'
+                )
+            ),
+            'flot' => array(
+                'js' => array(
+                    'plugins/flot/jquery.flot.min',
+                    'plugins/flot/jquery.flot.bar.order.min',
+                    'plugins/flot/jquery.flot.pie.min',
+                    'plugins/flot/jquery.flot.resize.min'
+                )
+            ),
+            'pageguide' => array(
+                'js' => array(
+                    'plugins/pageguide/jquery.pageguide'
+                ),
+                'css' => array(
+                    'plugins/pageguide/pageguide'
+                )
+            ),
+            'fullcalendar' => array(
+                'js' => array(
+                    'plugins/fullcalendar/fullcalendar.min'
+                ),
+                'css' => array(
+                    'plugins/fullcalendar/fullcalendar',
+                    'plugins/fullcalendar/fullcalendar.print'
+                )
+            ),
+            'chosen' => array(
+                'js' => array(
+                    'plugins/chosen/chosen.jquery.min'
+                ),
+                'css' => array(
+                    'plugins/chosen/chosen'
+                )
+            ),
+            'select2' => array(
+                'js' => array(
+                    'plugins/select2/select2.min'
+                ),
+                'css' => array(
+                    'plugins/select2/select2'
+                )
+            ),
+            'icheck' => array(
+                'js' => array(
+                    'plugins/icheck/jquery.icheck.min'
+                ),
+                'css' => array(
+                    'plugins/icheck/all'
+                )
+            ),
+            'plupload' => array(
+                'js' => array(
+                    'plugins/plupload/plupload.full',
+                    'plugins/plupload/jquery.plupload.queue'
+                ),
+                'css' => array(
+                    'plugins/plupload/jquery.plupload.queue'
+                )
+            ),
+            'custom.upload' => array(
+                'js' => array(
+                    'plugins/fileupload/bootstrap-fileupload.min',
+                    'plugins/mockjax/jquery.mockjax'
+                )
+            ),
+            'notify' => array(
+                'js' => array(
+                    'plugins/gritter/jquery.gritter.min'
+                ),
+                'css' => array(
+                    'plugins/gritter/jquery.gritter'
                 )
             )
         );
@@ -80,18 +200,20 @@ class __js_helper {
         /*
          * Me'looping daftar plugin untuk mencocokan nama plugin yang dipanggil
          */
-        $idx = 0;
+        
+        $alpha = 'a';
         foreach ($plugin_list as $key => $value) {
             if ($key == $name) {
                 /*
                  * Mendaftarkan file javascript jika ada yang disertakan kedalam plugin
                  */
                 if (isset($value['js'])) {
-                    $alpha = 'a';
+                    $idx = 0;
                     foreach ($value['js'] as $js) {
-                        $index = $idx . $alpha;
+                        // $index = $idx . $alpha;
+                        $index = $alpha . $idx;
                         self::set_plugin($index, $js);
-                        $alpha++;
+                        $idx++;
                     }
                 }
 
@@ -100,7 +222,8 @@ class __js_helper {
                  */
                 if (isset($value['css'])) {
                     foreach ($value['css'] as $css) {
-                        __css_helper::append($css, self::$param['framework']['url'] . '/asset/css');
+                        //__css_helper::append($css, self::$param['framework']['url'] . '/asset/css');
+                        __css_helper::append($css, self::$param['application']['themes']['url'] . '/css');
                     }
                 }
 
@@ -109,7 +232,7 @@ class __js_helper {
                  */
                 break;
             }
-            $idx++;
+            $alpha++;
         }
     }
 
@@ -131,7 +254,8 @@ class __js_helper {
 
     public static function load() {
         $js = '';
-        $js .= self::join(self::$js_plugin, self::$param['framework']['url'] . '/asset/js');
+        //$js .= self::join(self::$js_plugin, self::$param['framework']['url'] . '/asset/js');
+        $js .= self::join(self::$js_plugin, self::$param['application']['themes']['url'] . '/js');
         $js .= self::join(self::$js_append, self::$param['application']['themes']['url'] . '/js');
         return $js;
     }

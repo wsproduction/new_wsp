@@ -59,7 +59,7 @@ class mymenu extends helper {
                 $m .= '     <a data-toggle="dropdown" class="dropdown-toggle" href="' . $url . '">' . $title . '<span class="caret"></span></a>';
                 $m .= self::child_modul($val);
             } else {
-                $m .= '     <a href="' . $url . '">' . $title . '</a>';
+                $m .= '     <a href="' . url::base($url) . '">' . $title . '</a>';
             }
             $m .= '</li>';
         }
@@ -85,6 +85,8 @@ class mymenu extends helper {
                     $taget = '';
                     if ($url == '#') {
                         $taget = 'data-toggle="dropdown" class="dropdown-toggle"';
+                    } else {
+                        $url = url::base($url);
                     }
 
                     $m .= ' <a ' . $taget . ' href="' . $url . '"> ' . $title . '</a>';
@@ -92,7 +94,7 @@ class mymenu extends helper {
                     $m .= '</li>';
                 } else {
                     $m .= '<li>';
-                    $m .= ' <a href="' . $url . '"> ' . $title . '</a>';
+                    $m .= ' <a href="' . url::base($url) . '"> ' . $title . '</a>';
                     $m .= '</li>';
                 }
             }

@@ -1,4 +1,3 @@
-// FLAT Theme v2.0
 (function($) {
     $.fn.retina = function(retina_part) {
         // Set default retina file part to '-2x'
@@ -449,7 +448,7 @@ $(document).ready(function() {
                     } else {
                         opt.sDom = 'frtiS';
                     }
-                    opt.sAjaxSource = "js/plugins/datatable/demo.txt";
+                    opt.sAjaxSource = "js/plugins/datatable/demoddd.txt";
                 }
                 if ($(this).hasClass("dataTable-grouping") && $(this).attr("data-grouping") == "expandable") {
                     opt.bLengthChange = false;
