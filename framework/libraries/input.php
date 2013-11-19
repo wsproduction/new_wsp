@@ -22,12 +22,14 @@ class input {
         $this->param = $param;
     }
 
-    public function post($variable_name = '', $title = '', $validation = array()) {
+    public function post($variable_name = '', $title = '', $validation = array(), $trim = true) {
         $res = null;
         if (isset($_POST[$variable_name])) {
             $temp_value = $_POST[$variable_name];
             if (!is_array($temp_value)) {
-                $val = trim($temp_value);
+                $val = $temp_value;
+                if ($trim)
+                    $val = trim($temp_value);
                 if ($val != '') {
                     $res = $val;
                 }
@@ -89,11 +91,11 @@ class input {
         }
         return $bool;
     }
-    
+
     public function set_message($validation, $message) {
         $this->validation_list[$validation] = $message;
     }
-    
+
     public function validation() {
 
         $error = 0;
@@ -107,10 +109,10 @@ class input {
                             $error++;
                             $status = false;
                         }
-                        
+
                         if ($funct == 'callback')
                             $funct = $param;
-                        
+
                         $this->set_status($variable_name, $funct, $status);
                     }
                 }
@@ -168,7 +170,7 @@ class input {
                 return false;
         }
     }
-    
+
     private function callback($value, $callback) {
         $class = controller::get_instance();
         return $class->$callback($value);

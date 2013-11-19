@@ -147,10 +147,16 @@ $(document).ready(function() {
 
     // masked input
     if ($('.mask_date').length > 0) {
-        $(".mask_date").mask("9999/99/99");
+        $(".mask_date").mask("99/99/9999");
     }
     if ($('.mask_phone').length > 0) {
         $(".mask_phone").mask("(999) 999-9999");
+    }
+    if ($('.mask_handphone').length > 0) {
+        $(".mask_handphone").mask("9999-9999-9999");
+    }
+    if ($('.mask_zipcode').length > 0) {
+        $(".mask_zipcode").mask("99999");
     }
     if ($('.mask_serialNumber').length > 0) {
         $(".mask_serialNumber").mask("9999-9999-99");
@@ -328,31 +334,36 @@ $(document).ready(function() {
 
     // Wizard
     if ($(".form-wizard").length > 0) {
-        $(".form-wizard").formwizard({
-            formPluginEnabled: true,
-            validationEnabled: true,
-            focusFirstInput: false,
-            disableUIStyles: true,
-            validationOptions: {
-                errorElement: 'span',
-                errorClass: 'help-block error',
-                errorPlacement: function(error, element) {
-                    element.parents('.controls').append(error);
+        $('form.form-wizard').each(function() {
+            var id = $(this).attr('id');
+            $("#" + id).formwizard({
+                textSubmit : 'Save',
+                formPluginEnabled: true,
+                validationEnabled: true,
+                focusFirstInput: false,
+                disableUIStyles: true,
+                validationOptions: {
+                    errorElement: 'span',
+                    errorClass: 'help-block error',
+                    errorPlacement: function(error, element) {
+                        element.parents('.controls').append(error);
+                    },
+                    highlight: function(label) {
+                        $(label).closest('.control-group').removeClass('error success').addClass('error');
+                    },
+                    success: function(label) {
+                        label.addClass('valid').closest('.control-group').removeClass('error success').addClass('success');
+                    }
                 },
-                highlight: function(label) {
-                    $(label).closest('.control-group').removeClass('error success').addClass('error');
-                },
-                success: function(label) {
-                    label.addClass('valid').closest('.control-group').removeClass('error success').addClass('success');
+                formOptions: {
+                    success: function(out) {
+                        var handler = $('#' + id).attr('data-action-handler');
+                        eval('(' + handler + '(xhr_result())' + ')');
+                    },
+                    dataType: 'script',
+                    resetForm: false
                 }
-            },
-            formOptions: {
-                success: function(data) {
-                    alert("Response: \n\n" + data.say);
-                },
-                dataType: 'json',
-                resetForm: true
-            }
+            });
         });
     }
 

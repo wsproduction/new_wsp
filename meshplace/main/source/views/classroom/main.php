@@ -15,9 +15,9 @@
                 <table id="main-grid" class="table table-hover table-bordered ws-grid" data-source="<?php echo $data_source; ?>">
                     <thead>
                         <tr>
-                            <th field="title" style="min-width: 100px;">Tahun Pelajaran</th>
+                            <th field="title" style="min-width: 100px;">Nama Kelas</th>
                             <th field="status" style="min-width: 50px;">Status</th>
-                            <th field="action" style="width: 80px;text-align: center;">Aksi</th>
+                            <th field="action" style="width: 100px;text-align: center;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody></tbody>

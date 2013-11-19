@@ -14,7 +14,7 @@ class period_model extends model {
             $this->db->where($where);
         if ($limit >= 0 && $ofset >= 0)
             $this->db->limit($limit, $ofset);
-        $this->db->order('period_id');
+        $this->db->order('title');
         return $this->db->fetch();
     }
 
@@ -30,7 +30,14 @@ class period_model extends model {
     public function delete($id) {
         return $this->db->delete($this->db_period, array(array('period_id', '=', $id)));
     }
-
+    
+    public function period_options($detault_option = '--- Pilih ---') {
+        $option = array('' => $detault_option);
+        foreach ($this->period_list()->objects() as $row) {
+            $option[$row->period_id] = $row->title;
+        }
+        return $option;
+    }
 }
 
 ?>

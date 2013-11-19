@@ -116,15 +116,15 @@ class period extends controller {
                 'status' => ($status == 'on') ? 1 : 0
             );
 
-            $message = array(false, true, 'Pesan Error');
+            $message = array(false, true, 'Data gagal disimpan.');
             if (empty($id)) {
                 if ($this->model->save_create($data)) {
-                    $message = array(true, true, 'Pesan Berhasil', url::base('period'));
+                    $message = array(true, true, '<b>Data berhasil disimpan!</b> <br>Apakah anda akan menambahkan data baru lagi?', url::base('period'));
                 }
             } else {
                 $condition = array(array('period_id', '=', $id));
                 if ($this->model->save_update($data, $condition)) {
-                    $message = array(true, false, 'Pesan Berhasil', url::base('period'));
+                    $message = array(true, false, '<b>Data berhasil disimpan!</b> <br>Apakah data akan dirubah lagi?', url::base('period'));
                 }
             }
         } else {

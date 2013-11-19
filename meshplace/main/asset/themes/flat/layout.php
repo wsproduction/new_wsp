@@ -36,8 +36,6 @@ $protection = session::get('sess_login');
         asset::js()->append('application.min');
         // Just for demonstration
         asset::js()->append('demonstration.min');
-        // validation messages
-        asset::js()->append('validation.messages');
         // common
         asset::js()->append('common');
 
@@ -315,14 +313,14 @@ $protection = session::get('sess_login');
                             </ul>
                         </div>
                     </div>
-                    
+
                     <form action="http://www.eakroko.de/flat/search-results.html" method="GET" class='search-form'>
                         <div class="search-pane">
                             <input type="text" name="search" placeholder="Search user...">
                             <button type="submit"><i class="icon-search"></i></button>
                         </div>
                     </form>
-                    
+
                 </div>
 
                 <div id="main">
@@ -332,22 +330,7 @@ $protection = session::get('sess_login');
                                 <h1><?php echo $title_page; ?></h1>
                             </div>
                             <div class="pull-right">
-                                <ul class="minitiles">
-                                    <li class='grey'>
-                                        <a href="#"><i class="icon-cogs"></i></a>
-                                    </li>
-                                    <li class='lightgrey'>
-                                        <a href="#"><i class="icon-globe"></i></a>
-                                    </li>
-                                </ul>
                                 <ul class="stats">
-                                    <li class='satgreen'>
-                                        <i class="icon-money"></i>
-                                        <div class="details">
-                                            <span class="big">$324,12</span>
-                                            <span>Balance</span>
-                                        </div>
-                                    </li>
                                     <li class='lightred'>
                                         <i class="icon-calendar"></i>
                                         <div class="details">
@@ -379,45 +362,14 @@ $protection = session::get('sess_login');
                         <!-- End : Main View -->
 
                     </div>
-                </div></div>
-            <script type="text/javascript">
-
-    //                var _gaq = _gaq || [];
-    //                _gaq.push(['_setAccount', 'UA-38620714-4']);
-    //                _gaq.push(['_trackPageview']);
-    //
-    //                (function() {
-    //                    var ga = document.createElement('script');
-    //                    ga.type = 'text/javascript';
-    //                    ga.async = true;
-    //                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    //                    var s = document.getElementsByTagName('script')[0];
-    //                    s.parentNode.insertBefore(ga, s);
-    //                })();
-
-            </script>
+                </div>
+            </div>
         </body>
     <?php else : /* Jika Belum Login */ ?>
         <body class='login theme-lightred'>
             <div class="wrapper">
                 {main_view}
             </div>
-            <script type="text/javascript">
-
-    //                var _gaq = _gaq || [];
-    //                _gaq.push(['_setAccount', 'UA-38620714-4']);
-    //                _gaq.push(['_trackPageview']);
-    //
-    //                (function() {
-    //                    var ga = document.createElement('script');
-    //                    ga.type = 'text/javascript';
-    //                    ga.async = true;
-    //                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    //                    var s = document.getElementsByTagName('script')[0];
-    //                    s.parentNode.insertBefore(ga, s);
-    //                })();
-
-            </script>
         </body>
     <?php endif; ?>
 </html>

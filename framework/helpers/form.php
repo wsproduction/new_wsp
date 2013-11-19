@@ -9,6 +9,7 @@ class form extends helper {
     private static $form_tips_id;
     private static $password_meter;
     private static $password_meter_id;
+    private static $form_options;
     private static $type_allowed = array('button', 'checkbox', 'file', 'hidden', 'image',
         'password', 'radio', 'reset', 'submit', 'text',
         'textarea', 'label', 'fieldset', 'select', 'optgroup');
@@ -38,6 +39,8 @@ class form extends helper {
 
     private static function reset_attribut() {
         self::$attribut = array();
+        self::$form_options['list'] = array();
+        self::$form_options['selected'] = '';
     }
 
     public static function create($type, $name, $attribut = array(), $render = false) {
@@ -45,13 +48,18 @@ class form extends helper {
         self::$attribut['type'] = $type;
         self::$attribut['name'] = $name;
         self::push_attribut($attribut);
-        
+
         if ($render)
-            return self::generate ();
+            return self::generate();
     }
 
     public static function value($value) {
         self::$attribut['value'] = $value;
+    }
+
+    public static function options($list = array(), $value = '') {
+        self::$form_options['list'] = $list;
+        self::$form_options['selected'] = $value;
     }
 
     private static function generate() {
@@ -59,10 +67,33 @@ class form extends helper {
         $type = self::$attribut['type'];
 
         if (in_array($type, self::$type_allowed)) {
+            $attr = self::parsing_attribut(self::$attribut);
             if (in_array($type, array('select', 'optgroup'))) {
-                
+                $form .= '<select ' . $attr . ' />';
+
+                if ($type == 'select') {
+                    foreach (self::$form_options['list'] as $key => $val) {
+                        $selected = '';
+                        if ($key == self::$form_options['selected'])
+                            $selected = 'selected="selected"';
+                        $form .= '<option value="' . $key . '" ' . $selected . '>' . $val . '</option>';
+                    }
+                } else {
+                    foreach (self::$form_options['list'] as $label => $option) {
+                        $form .= '<optgroup>' . $label . '</option>';
+                        foreach ($option as $key => $val) {
+                            $selected = '';
+                            if ($key == self::$form_options['selected'])
+                                $selected = 'selected="selected"';
+                            $form .= '<option value="' . $key . '" ' . $selected . '>' . $val . '</option>';
+                        }
+                    }
+                }
+
+                $form .= '</select>';
+            } else if (in_array($type, array('textarea'))) { 
+                $form .= '<textarea ' . $attr . ' ></textarea>';
             } else {
-                $attr = self::parsing_attribut(self::$attribut);
                 $form .= '<input ' . $attr . ' />';
             }
 

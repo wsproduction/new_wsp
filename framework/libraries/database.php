@@ -6,6 +6,7 @@ class database {
     private $query;
     private $pdo;
     private $_status_transaction = 0;
+    private $temp_sql;
 
     public function __construct($param) {
         $this->param = $param;
@@ -154,7 +155,7 @@ class database {
      * Method untuk menghubungkan antar tabel
      */
 
-    public function join($table, $condition, $type = '') {
+    public function join($table, $condition, $type = 'INNER') {
         $this->query['join'][] = array(
             'table' => $table,
             'condition' => $condition,
@@ -343,21 +344,21 @@ class database {
 
                     $binder_start = ':wsf_param_where_' . date('YmdHis') . '_' . $idx . '_start';
                     $binder_end = ':wsf_param_where_' . date('YmdHis') . '_' . $idx . '_end';
-                    $this->bind_value($binder_start, trim($keyword_start));
-                    $this->bind_value($binder_end, trim($keyword_end));
+                    $this->bind_value($binder_start, $keyword_start);
+                    $this->bind_value($binder_end, $keyword_end);
                     $parameter = $binder_start . ' AND ' . $binder_end . ' ';
                 } else {
 
                     if ($bind_value) {
                         $parameter = ':wsf_param_where_' . date('YmdHis') . '_' . $idx;
-                        $this->bind_value($parameter, trim($keyword));
+                        $this->bind_value($parameter, $keyword);
                     } else {
                         $parameter = $keyword;
                     }
 
-                    if ($keyword == null && $expression == '=') {
+                    if (is_null($keyword) && $expression == '=') {
                         $expression = 'IS';
-                    } if ($keyword == null && $expression == '<>') {
+                    } else if (is_null($keyword) && $expression == '<>') {
                         $expression = 'IS NOT';
                     }
                 }
@@ -491,7 +492,7 @@ class database {
     private function sql_generate($sql, $return = 'bool') {
         try {
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
+            
             $sth = $this->pdo->prepare($sql);
             $sth->setFetchMode(PDO::FETCH_ASSOC);
 
@@ -579,7 +580,7 @@ class database {
         $value = preg_replace("/[\t\s]+/", " ", trim($value));;
         return $value;
     }
-
+    
 }
 
 /*

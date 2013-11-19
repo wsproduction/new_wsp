@@ -93,7 +93,8 @@ class __js_helper {
             'jquery.valiation' => array(
                 'js' => array(
                     'plugins/validation/jquery.validate.min',
-                    'plugins/validation/additional-methods.min'
+                    'plugins/validation/additional-methods.min',
+                    'validation.messages'
                 )
             ),
             'data.tables' => array(
@@ -193,6 +194,25 @@ class __js_helper {
                 ),
                 'css' => array(
                     'plugins/gritter/jquery.gritter'
+                )
+            ),
+            'form.wizard' => array(
+                'js' => array(
+                    'plugins/wizard/jquery.form.wizard.min',
+                    'plugins/mockjax/jquery.mockjax'
+                )
+            ),
+            'datepicker' => array(
+                'js' => array(
+                    'plugins/datepicker/bootstrap-datepicker'
+                ),
+                'css' => array(
+                    'plugins/datepicker/datepicker'
+                )
+            ),
+            'maskedinput' => array(
+                'js' => array(
+                    'plugins/maskedinput/jquery.maskedinput.min'
                 )
             )
         );

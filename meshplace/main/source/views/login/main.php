@@ -2,7 +2,7 @@
 <div class="login-body">
     <h2>SIGN IN</h2>
 
-    <?php echo form::begin('form_login', $action_login, 'post', array('class' => 'ajax-awesome form-validate', 'data-action-handler' => 'fhandler')); ?>
+    <?php echo form::begin('form_login', $action_login, 'post', array('class' => 'ajax-submit form-validate', 'enctype' => 'multipart/form-data', 'data-action-handler' => 'fhandler')); ?>
     <div class="control-group">
         <div class="email controls">
             <?php
